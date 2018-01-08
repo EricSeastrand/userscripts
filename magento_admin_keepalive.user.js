@@ -10,13 +10,18 @@
 // ==/UserScript==
 
 window.setInterval(function _keepAdminAlive() {
-    if ($$('p.super:contains("Logged in as")')[0]) {
-        console.log("Timeout reached. Keeping session alive!");
-        new Ajax.Request('/admin/dashboard/index', {
-            method: 'get'
-        });
-        toggleSelectsUnderBlock($('loading-mask'), true);
-        Element.hide('loading-mask');
+    if (!$$('p.super:contains("Logged in as")')[0]) {
+    	console.log("Not logged in. Doing nothing");
+    	return;
     }
 
+    console.log("Timeout reached. Keeping session alive!");
+    new Ajax.Request('/admin/dashboard/index', {
+        method: 'get'
+    });
+    toggleSelectsUnderBlock($('loading-mask'), true);
+    Element.hide('loading-mask');
+    
 }, 600000);
+
+console.log("Keepalive loaded");
