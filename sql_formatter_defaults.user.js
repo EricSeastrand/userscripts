@@ -31,7 +31,7 @@ function setSaneDefaults() {
 		value.checked = true;
 	});
 
-	iterateSelector('#formatoptions select[name="dbvendor"]', function (index, value) {
+	iterateSelector('select[name="dbvendor"]', function (index, value) {
 		value.value = 'mysql';
 	});
 	
