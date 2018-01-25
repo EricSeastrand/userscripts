@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         
+// @name         SQL Formatter Sane Default Setter
 // @namespace    https://www.bubbleup.net/
 // @version      0.1
 // @description  Sets sane defaults for SQL formatting
