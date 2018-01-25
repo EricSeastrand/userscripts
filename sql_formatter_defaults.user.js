@@ -19,7 +19,7 @@ function setSaneDefaults() {
 	var iterateSelector = function(selector, callback) {
 		var elements = document.querySelectorAll(selector);
 		forEach(elements, callback);
-	}
+	};
 
 	iterateSelector('#formatoptions select', function (index, value) {
 	    value.value="Unchanged";
