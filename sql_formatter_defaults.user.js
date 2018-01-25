@@ -4,8 +4,7 @@
 // @version      0.1
 // @description  Sets sane defaults for SQL formatting
 // @author       Eric Seastrand
-// @match        http://www.dpriver.com/pp/sqlformat.htm
-// @grant        none
+// @include      www.dpriver.com\/pp\/sqlformat.htm
 // @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/sql_formatter_defaults.user.js
 // ==/UserScript==
 
