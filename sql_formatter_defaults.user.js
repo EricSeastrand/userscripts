@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  Sets sane defaults for SQL formatting
 // @author       Eric Seastrand
-// @include      www.dpriver.com\/pp\/sqlformat.htm
+// @match        http://www.dpriver.com/pp/sqlformat.htm
 // @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/sql_formatter_defaults.user.js
 // ==/UserScript==
 
@@ -21,20 +21,40 @@ function setSaneDefaults() {
 		forEach(elements, callback);
 	};
 
-	iterateSelector('#formatoptions select', function (index, value) {
-	    value.value="Unchanged";
+	iterateSelector('#formatoptions select', function (index, element) {
+	    element.value="Unchanged";
 	});
-	iterateSelector('#formatoptions select[name="keywordcs"]', function (index, value) {
-	    value.value="Uppercase";
+	iterateSelector('#formatoptions select[name="keywordcs"]', function (index, element) {
+	    element.value="Uppercase";
 	});
-	iterateSelector('#formatoptions select[name="andorunderwhere"], #formatoptions select[name="removelnbr"]', function (index, value) {
-		value.checked = true;
+	iterateSelector('#formatoptions select[name="removelnbr"]', function (index, element) {
+		element.checked = true;
+	});
+	iterateSelector('#formatoptions input[name="andorunderwhere"]', function (index, element) {
+		element.checked = true;
 	});
 
-	iterateSelector('select[name="dbvendor"]', function (index, value) {
-		value.value = 'mysql';
+	iterateSelector('#formatoptions input[name="maxlenincm"]', function (index, element) {
+		element.value = 999;
 	});
-	
+
+
+	iterateSelector('select[name="dbvendor"]', function (index, element) {
+		element.value = 'mysql';
+	});
+
+    iterateSelector('#ioutputsql', function (index, element) {
+		element.style.height = '1000px';
+	});
+
+	iterateSelector('#inputsql', function (index, element) {
+		element.addEventListener('blur', function(){
+			SQLFMT.format();
+		});
+	});
+
+
+
 }
 
 setSaneDefaults();
