@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         New Userscript
-// @namespace    http://tampermonkey.net/
+// @namespace    https://www.bubbleup.net/
 // @version      0.1
-// @description  Adds middleclick
+// @description  Adds middleclick to the grid to open rows in a new tab
 // @author       Eric Seastrand
 // @match        https://*.*.*.bubbleup.com/*admin*
 // @grant        none
+// @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/magento_middleclick_new_tab_grid_links.user.js
 // ==/UserScript==
 (function() {
     'use strict';
