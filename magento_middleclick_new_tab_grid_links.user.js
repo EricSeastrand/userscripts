@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         New Userscript
+// @name         Make grid rows support moddle/ctrl click.
 // @namespace    https://www.bubbleup.net/
 // @version      0.1
 // @description  Adds middleclick to the grid to open rows in a new tab
