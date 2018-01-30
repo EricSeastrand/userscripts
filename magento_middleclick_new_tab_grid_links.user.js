@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  Adds middleclick to the grid to open rows in a new tab
 // @author       Eric Seastrand
-// @match        https://*.*.*.bubbleup.com/*admin*
+// @match        *admin*
 // @grant        none
 // @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/magento_middleclick_new_tab_grid_links.user.js
 // ==/UserScript==
