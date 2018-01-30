@@ -9,17 +9,7 @@
 // @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/magento_middleclick_new_tab_grid_links.user.js
 // ==/UserScript==
 (function() {
-    'use strict';
-
-    iterateSelector('.grid table.data tr', function(el) {
-        var url = el.title;
-        el.addEventListener('click', function(e){
-            if(e.ctrlKey || e.which = 2){
-                window.open(url);
-            }
-            console.log(e, el, url);
-        }, true)
-    });
+     'use strict';
 
     // forEach method, could be shipped as part of an Object Literal/Module
     var forEach = function(array, callback, scope) {
@@ -35,4 +25,14 @@
         });
     }
 
+       
+    iterateSelector('.grid table.data tr', function(el) {
+        var url = el.title;
+        el.addEventListener('click', function(e){
+            if(e.ctrlKey || e.which = 2){
+                window.open(url);
+            }
+            console.log(e, el, url);
+        }, true)
+    });
 })();
