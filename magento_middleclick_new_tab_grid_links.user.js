@@ -29,7 +29,7 @@
     iterateSelector('.grid table.data tr', function(el) {
         var url = el.title;
         el.addEventListener('click', function(e){
-            if(e.ctrlKey || e.which = 2){
+            if(e.ctrlKey || e.which == 2){
                 window.open(url);
             }
             console.log(e, el, url);
