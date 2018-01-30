@@ -7,28 +7,28 @@
 // @match        https://*.*.*.bubbleup.com/*admin*
 // @grant        none
 // ==/UserScript==
-
 (function() {
     'use strict';
 
-   iterateSelector('.grid table.data tr', function(e){
-   		e.addEventListener('click', )
-   });
+    iterateSelector('.grid table.data tr', function(el) {
+        var url = el.title;
+        el.addEventListener('click', function(e){
+            console.log(e, el, url);
+        }, true)
+    });
 
-// forEach method, could be shipped as part of an Object Literal/Module
-var forEach = function (array, callback, scope) {
-  for (var i = 0; i < array.length; i++) {
-    callback.call(scope, i, array[i]); // passes back stuff we need
-  }
-};
+    // forEach method, could be shipped as part of an Object Literal/Module
+    var forEach = function(array, callback, scope) {
+        for (var i = 0; i < array.length; i++) {
+            callback.call(scope, i, array[i]); // passes back stuff we need
+        }
+    };
 
-var iterateSelector = function(selector, callback) {	
-	var myNodeList = document.querySelectorAll(selector);
-	forEach(myNodeList, function (index, value) {
-	    callback(value, index);
-	});
-}
-
-
+    var iterateSelector = function(selector, callback) {
+        var myNodeList = document.querySelectorAll(selector);
+        forEach(myNodeList, function(index, value) {
+            callback(value, index);
+        });
+    }
 
 })();
