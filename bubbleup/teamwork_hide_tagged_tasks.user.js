@@ -46,8 +46,8 @@
     }
 
     function cleanupEmptySections() {
-        $('.taskCol').filter(function(){ return $(this).find('.task-row:visible').length < 1 }).hide();
-        $('.projCol').closest('tr').filter(function(){ return $(this).find('.taskCol:visible').length < 1 }).hide();
+        $('.taskCol').filter(function(){ return $(this).find('.task-row:visible').length < 1; }).hide();
+        $('.projCol').closest('tr').filter(function(){ return $(this).find('.taskCol:visible').length < 1; }).hide();
     }
 
     function doTheUsefulStuff() {
