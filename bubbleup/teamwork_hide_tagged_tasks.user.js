@@ -56,7 +56,7 @@
     }
 
     $(function(){
-        window.setTimeout(doTheUsefulStuff, 1000);
+        window.setTimeout(doTheUsefulStuff, 3000);
     });
 
 })();
