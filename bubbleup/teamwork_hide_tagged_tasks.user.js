@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TeamWork hide Ongoing tasks
 // @namespace    https://www.bubbleup.net/
-// @version      0.1
+// @version      0.2
 // @description  Hides tasks with specific tags from the main list.
 // @author       You
 // @match        https://pm.bubbleup.net/*
@@ -33,10 +33,10 @@
 
     function findFilterableTasks() {
         return $('.tagHolder [data-bind="text:name"]').filter(function(e) {
-            return shouldTagBeVisible( $(e).text() );
+            return !shouldTagBeVisible( $(this).text() );
         }).closest('.task-row');
     }
-    
+
     function hideFilterableTasks() {
         var filterable = findFilterableTasks();
 
