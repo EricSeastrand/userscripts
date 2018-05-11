@@ -6,7 +6,7 @@
 // @author       You
 // @match        https://pm.bubbleup.net/*
 // @grant        none
-// @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/bubbleup/teamwork_hide_wasted_space.user.js
+// @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/bubbleup/teamwork_show_missing_time.user.js
 // ==/UserScript==
 
 (function($) {
