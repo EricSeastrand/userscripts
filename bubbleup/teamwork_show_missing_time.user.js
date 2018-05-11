@@ -88,8 +88,10 @@
 		var defaultTime = getDefaultArrivalTime();
 
 		try {
-			// var firstTime = moment($('.widget-time-list table:first .timeEntryRow:last .time:first').attr('title').replace('Logged: ', ''), "MM/DD/YYYY h:mma").toDate();
-			var dateString = $('.widget-time-list:eq(0) .gridHeading.subTitle').text().trim() + ' ' + $('.widget-time-list table:first .timeEntryRow:last .time:first').text().trim();
+			var rowsWithNoStartTime = $('.widget-time-list table:first .timeEntryRow .time:contains("—")').closest('.timeEntryRow');
+			var firstTimeCell = $('.widget-time-list table:first .timeEntryRow').not(rowsWithNoStartTime).last().find('.time:first');
+			
+			var dateString = $('.widget-time-list:eq(0) .gridHeading.subTitle').text().trim() + ' ' + firstTimeCell.text().trim();
 			var firstTime = moment(dateString, "dddd[,] DD MMMM h:mma").toDate();
 		} catch(e) {
 			console.log("Can't get start time", e);
