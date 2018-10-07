@@ -10,6 +10,13 @@
 // @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/mls_mortgage_estimator_integration.user.js
 // ==/UserScript==
 
+var fieldConstants = {
+    pmi : '0.55',
+    hoi : '2000',
+    downpayment_type: 'percent',
+    downpayment: 3
+};
+
 function extractByKey(data, key, val) {
     var found = data.find(function(obj) {
       return obj[key] == val;
@@ -66,11 +73,7 @@ function prepareDataForMortgageCalculator() {
     var dataToSend = {
         hoa : listing.hoaAnnual / 12, // 'Monthly HOA'
         property_tax : listing.taxAnnual,
-        pmi : '0.55',
-        hoi : '2000',
-        homevalue: listing.listPrice,
-        downpayment_type: 'percent',
-        downpayment: 3
+        homevalue: listing.listPrice
     };
 
     return dataToSend;
@@ -83,7 +86,18 @@ function buildMortgageCalculatorLink() {
     return 'https://www.mortgagecalculator.org/#' + queryString;
 }
 
-//console.log(prepareDataForMortgageCalculator());
+function openMortgageCalculator() {
+    var url = buildMortgageCalculatorLink();
+    window.open(url);
+}
+$(document).keydown(function(e){
+    if(e.keyCode === 72 && e.altKey) {
+        // Alt + H
+        openMortgageCalculator();
+    }
+
+});
+
 
 if(window.location.href.indexOf('https://www.mortgagecalculator.org/#') !== -1) {
     $(setMortageCalculatorFieldsFromHash);
@@ -92,15 +106,20 @@ if(window.location.href.indexOf('https://www.mortgagecalculator.org/#') !== -1) 
 function setMortageCalculatorFieldsFromHash() {
     var queryString = window.location.hash.slice(1);
     var inputsToSet = new URLSearchParams( queryString );
+    var fieldsToSet = {};
     for (let definition of inputsToSet) {
-
         var field = definition[0];
         var value = definition[1];
+        fieldsToSet[field] = value;
+    }
+
+    let merged = {fieldsToSet, fieldConstants  };
+    Object.entries(merged).forEach(([field, value]) => {
 
         console.log("Setting field", field, value);
 
         var input = $('.calcu-block input').filter((i, e) => e.name=="param["+field+"]");
-        
+
         if(input.find('[type="radio"]').length == input.length ) {
             console.log("Detected radio:", field);
             var radioToCheck = input.find((i, e) => e.value == value );
@@ -113,30 +132,38 @@ function setMortageCalculatorFieldsFromHash() {
 
         input.val(value);
     }
+    fixPrincipal();
 
-
+    jQuery('.calcu-block [type="submit"][value="Calculate"]').click();
 }
 
-function openMortgageCalculator() {
-    var url = buildMortgageCalculatorLink();
-    window.open(url);
-}
-/*
-var keybinds = [
-    {keyCode: 72, altKey: true, function: openMortgageCalculator}
-];
-keybinds.matchFromEvent = function(event) {
-    var propsToCheck = ['keyCode', 'altKey', 'ctrlKey'];
-    this.find(function(obj) {
+function fixPrincipal() {
+var $principal = $('input[name="param[principal]"]'),
+        $downpayment = $('input[name="param[downpayment]"]'),
+        $homevalue = $('input[name="param[homevalue]"]');
 
-        return obj[key] == val;
-    });
-}
-*/
-$(document).keydown(function(e){
-    if(e.keyCode === 72 && e.altKey) {
-        // Alt + H
-        openMortgageCalculator();
+    function changePrincipal() {
+        var principal, homevalue, downpayment,
+            $downpayment_type = $('input[name="param[downpayment_type]"]:checked');
+
+        homevalue = parseFloat($homevalue.val());
+        downpayment = parseFloat($downpayment.val());
+        if (isNaN(homevalue)) {
+            homevalue = 0;
+        }
+        if (isNaN(downpayment)) {
+            downpayment = 0;
+        }
+        if ($downpayment_type.val() == 'money') {
+            principal = homevalue - downpayment;
+        }
+        else {
+            if (downpayment != 0) {
+                principal = homevalue * (1 - downpayment/100);
+            }
+        }
+
+        $principal.val(principal.toFixed(2));
     }
-
-});
+    changePrincipal();
+}
