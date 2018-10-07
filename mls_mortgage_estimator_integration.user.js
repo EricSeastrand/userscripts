@@ -46,26 +46,32 @@ function extractListingData() {
 
 	var hoaSchedule = data.extractByKey('Maint Fee Pay Schedule');
 	if(hoaSchedule == 'Annually') {
-		hoaAnnual = hoaAmount * 12;
+		hoaAnnual = hoaAmount;
 	}else if(hoaSchedule == 'Monthly') {
 		hoaAnnual = hoaAmount * 12;
+	}else {
+		var err = "Unable to determine HOA dues schedule multiplier from '"+hoaSchedule+"'";
+		console.log(err, hoaSchedule, data);
+		throw err;
 	}
 
 	return {
 		listPrice: listPrice,
 		taxRate : taxRate,
 		taxAnnual: taxRate * listPrice / 100,
-		hoaDues: hoaDues
+		hoaDues: hoaAnnual
 	};
 }
 
 function prepareDataForMortgageCalculator() {
 	var listing = extractListingData();
-Property Tax: 
-PMI: 
-Home Ins:
-Monthly HOA:
-	
+	var dataToSend = [
+		'Monthly HOA' : 
+		'Property Tax' : listing.taxAnnual,
+		'PMI' : '0.55'
+		'Home Ins' : '2000'
+	];
+
 }
 
 
