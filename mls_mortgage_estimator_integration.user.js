@@ -6,8 +6,11 @@
 // @author       Eric Seastrand
 // @include      https://www.mortgagecalculator.org/
 // @include      https://matrix.harmls.com/Matrix/Public/Portal.aspx*
-// @grant        none
 // @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/mls_mortgage_estimator_integration.user.js
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_addValueChangeListener
+// @grant        GM_listValues
 // ==/UserScript==
 
 var fieldConstants = {
@@ -16,6 +19,8 @@ var fieldConstants = {
     downpayment_type: 'percent',
     downpayment: 3
 };
+var onCalculatedEventName = 'mortgage_calculated';
+var storagePrefix = 'home_listing_';
 
 function extractByKey(data, key, val) {
     var found = data.find(function(obj) {
@@ -64,24 +69,41 @@ function extractListingData() {
         listPrice: listPrice,
         taxRate : taxRate,
         taxAnnual: taxRate * listPrice / 100,
-        hoaAnnual: hoaAnnual
+        hoaAnnual: hoaAnnual,
+        address: getListingAddress()
     };
 }
 
-function prepareDataForMortgageCalculator() {
-    var listing = extractListingData();
+function prepareDataForMortgageCalculator(listing) {
     var dataToSend = {
         hoa : listing.hoaAnnual / 12, // 'Monthly HOA'
         property_tax : listing.taxAnnual,
         homevalue: listing.listPrice
     };
-
     return dataToSend;
 
 }
 
+function getListingAddress() {
+    return $('.d-mega .J_formula').first().text().trim();
+}
+
+function createListingKey(address) {
+    address = address || getListingAddress();
+    address = address.trim();
+    if(!address) {
+        throw "Can't deteremine address.";
+    }
+    return address.toLowerCase().replace(/[^\w]/g, '-');
+}
+
 function buildMortgageCalculatorLink() {
-    var queryString = jQuery.param(prepareDataForMortgageCalculator());
+    var listing = extractListingData();
+    var queryString = jQuery.param(prepareDataForMortgageCalculator(listing));
+
+
+    var meta = {listKey: createListingKey(listing.address), address: listing.address, homevalue: listing.listPrice};
+    GM_setValue('last_listing', meta);
 
     return 'https://www.mortgagecalculator.org/#' + queryString;
 }
@@ -96,11 +118,47 @@ $(document).keydown(function(e){
         openMortgageCalculator();
     }
 
+   if(e.keyCode === 66 && e.altKey) {
+        // Alt + B
+       //console.log(getCachedDataForAddress());
+       var i = monthlyPaymentInjector();
+       unsafeWindow.monthlyPaymentInjector = i;
+       i.run();
+    }
+
 });
 
+unsafeWindow.getCachedDataForAddress = getCachedDataForAddress;
+function getCachedDataForAddress(address) {
+    var listKey = createListingKey(address);
+    var listingData = GM_getValue(storagePrefix+listKey);
+
+    return listingData;
+}
 
 if(window.location.href.indexOf('https://www.mortgagecalculator.org/#') !== -1) {
     $(setMortageCalculatorFieldsFromHash);
+} else {
+    sendPriceUpdateMessage();
+}
+
+function sendPriceUpdateMessage() {
+    var monthlyPayment = $('.rw-box:contains("Payment With PMI"), .rw-box:contains("Monthly Payment")').find('.left-cell h3').first().text();
+    monthlyPayment = sanitizeFloat(monthlyPayment);
+
+    var loanAmount = sanitizeFloat($('input[name="param[principal]"]').val());
+    var homeValue = sanitizeFloat($('input[name="param[homevalue]"]').val());
+    var downPayment = homeValue - loanAmount;
+
+    var message = {
+        downPayment: downPayment,
+        monthlyPayment: monthlyPayment,
+        homeValue: homeValue
+    };
+
+    var listing = GM_getValue('last_listing'); //{address: listing.address, homevalue: listing.listPrice}
+
+    GM_setValue(storagePrefix+listing.listKey, {...message, ...listing});
 }
 
 function setMortageCalculatorFieldsFromHash() {
@@ -113,7 +171,7 @@ function setMortageCalculatorFieldsFromHash() {
         fieldsToSet[field] = value;
     }
 
-    let merged = {fieldsToSet, fieldConstants  };
+    let merged = {...fieldsToSet, ...fieldConstants  };
     Object.entries(merged).forEach(([field, value]) => {
 
         console.log("Setting field", field, value);
@@ -131,7 +189,7 @@ function setMortageCalculatorFieldsFromHash() {
         console.log("Setting field", input);
 
         input.val(value);
-    }
+    });
     fixPrincipal();
 
     jQuery('.calcu-block [type="submit"][value="Calculate"]').click();
@@ -167,3 +225,90 @@ var $principal = $('input[name="param[principal]"]'),
     }
     changePrincipal();
 }
+function monthlyPaymentInjector() {
+    var self = {};
+    self.run = function() {
+        if(getListingAddress()) {
+            self.addPaymentInfoToListingDetail();
+        }
+
+        self.addPaymentInfoToList();
+    }
+
+    self.addPaymentInfoToList = function() {
+        var addresses = $('#_ctl0_m_pnlRenderedDisplay a[href^="javascript:__doPostBack"]');
+
+        addresses.each((i, el) => self.addPaymentInfoToListElement(el, $(el).text().trim()));
+    }
+
+    self.addPaymentInfoToListElement = function(element, address) {
+        console.log(element, address);
+
+        var message = self.getMonthlyPaymentMessage(address);
+
+        var existingMonthlyPrice = $(element).closest('.multiLineDisplay').find('.monthly-price');
+        if(existingMonthlyPrice.length < 1) {
+            var priceElement = $(element).closest('.multiLineDisplay').find('span.d-fontSize--largest').addClass('total-price');
+            var template = priceElement.clone();
+            template.addClass('monthly-price').css('color', '#c74117');
+            existingMonthlyPrice = template;
+            template.insertAfter(priceElement);
+        }
+
+        existingMonthlyPrice.text(message);
+
+
+    }
+
+    self.addPaymentInfoToListingDetail = function() {
+        var addressField = $('.d-mega .J_formula:first');
+        addressField.addClass('totalPrice');
+
+        var template = addressField.closest('#wrapperTable').clone();
+        template.addClass('monthly-price').css('color', '#c74117');
+
+        var message = self.getMonthlyPaymentMessage();
+
+        template.find('.J_formula').text(message);
+
+        addressField.closest('.d-mega').append(template);
+    }
+
+    self.getMonthlyPaymentMessage = function(address) {
+        var payment = self.getPaymentForAddress(address);
+        if(payment) {
+            var message = '$' + payment.toLocaleString() + "/mo";
+        } else {
+            message = "No Monthly Price Data";
+        }
+        return message;
+    }
+
+    self.getPaymentForAddress = function(address) {
+        var data = getCachedDataForAddress(address);
+
+        if(!data) {
+            return false;
+        }
+        return data.monthlyPayment;
+    }
+
+    return self;
+}
+
+
+
+
+
+
+
+
+
+
+
+unsafeWindow.GM_getValue = GM_getValue;
+unsafeWindow.GM_setValue = GM_setValue;
+unsafeWindow.GM_listValues = GM_listValues;
+
+
+
