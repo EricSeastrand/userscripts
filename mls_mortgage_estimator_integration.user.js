@@ -308,7 +308,15 @@ function monthlyPaymentInjector() {
 
 
 
+unsafeWindow.findSortedDates = function() {
+    var regex = new RegExp(/^\d{4}$/); // expression here
 
+    var dates = $.makeArray($(".d-textStrong").filter(function () {
+        return regex.test($(this).text().trim()); 
+    }).map((i,e)=>e.textContent.trim()));
+    
+    return dates.sort();
+}
 
 
 
