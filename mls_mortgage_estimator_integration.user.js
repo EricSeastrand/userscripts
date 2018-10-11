@@ -17,7 +17,8 @@ var fieldConstants = {
     pmi : '0.55',
     hoi : '2000',
     downpayment_type: 'percent',
-    downpayment: 3
+    downpayment: 3,
+    interest_rate: 5.25
 };
 var onCalculatedEventName = 'mortgage_calculated';
 var storagePrefix = 'home_listing_';
