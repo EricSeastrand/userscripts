@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  Builds deployment clone commands/queries for you
 // @author       Eric Seastrand
-// @match        https://push-service.busites.com/index.php?r=deployments/view&id=*
+// @match        https://push-service.busites.com/index.php?r=deployments/admin*
 // @grant        none
 // @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/bubbleup/pushservice_deployment_clone.user.js
 // ==/UserScript==
