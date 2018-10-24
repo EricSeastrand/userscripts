@@ -57,8 +57,12 @@ UPDATE \`deployment_replacements\`
 SET \`replace\`=(SELECT cache_host FROM environments WHERE id=@new_environment_id)
 WHERE deployment_id=@new_deployment_id AND \`search\`="{redis_host}";
 
-INSERT INTO \`deployment_replacements\` (\`deployment_id\`, \`search\`, \`replace\`, \`file\`)
-VALUES (@new_deployment_id, '{import_media}', 'true', '/onpush.sh');
+INSERT INTO \`deployment_replacements\` 
+  (\`deployment_id\`, \`search\`, \`replace\`, \`file\`)
+VALUES
+  (@new_deployment_id, '{import_media}', 'true', '/onpush.sh'),
+  (@new_deployment_id, '{import_media_params}', 'include-meet-and-greet', '/onpush.sh')
+;
 
 SELECT @new_deployment_db_name:=(SELECT \`replace\` FROM deployment_replacements WHERE deployment_id=@new_deployment_id AND \`search\`="{db_name}" LIMIT 1);
 SELECT @new_deployment_db_user:=(SELECT \`replace\` FROM deployment_replacements WHERE deployment_id=@new_deployment_id AND \`search\`="{db_user}" LIMIT 1);
