@@ -58,7 +58,29 @@ SET \`replace\`=(SELECT cache_host FROM environments WHERE id=@new_environment_i
 WHERE deployment_id=@new_deployment_id AND \`search\`="{redis_host}";
 
 INSERT INTO \`deployment_replacements\` (\`deployment_id\`, \`search\`, \`replace\`, \`file\`)
-VALUES (${deploymentId}, '{import_media}', 'true', '/onpush.sh');
+VALUES (@new_deployment_id, '{import_media}', 'true', '/onpush.sh');
+
+SELECT @new_deployment_db_name:=(SELECT \`replace\` FROM deployment_replacements WHERE deployment_id=@new_deployment_id AND \`search\`="{db_name}" LIMIT 1);
+SELECT @new_deployment_db_user:=(SELECT \`replace\` FROM deployment_replacements WHERE deployment_id=@new_deployment_id AND \`search\`="{db_user}" LIMIT 1);
+SELECT @new_deployment_db_pass:=(SELECT \`replace\` FROM deployment_replacements WHERE deployment_id=@new_deployment_id AND \`search\`="{db_password}" LIMIT 1);
+
+
+set @db_create_query = CONCAT(
+'CREATE DATABASE IF NOT EXISTS \`', @new_deployment_db_name, '\`;'
+);
+
+PREPARE stmt FROM @db_create_query;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+
+set @db_grant_query = CONCAT(
+'GRANT ALL ON \`', @new_deployment_db_name, '\`.* TO "', @new_deployment_db_user, '"@"%" IDENTIFIED BY "', @new_deployment_db_pass, '";'
+);
+
+PREPARE stmt FROM @db_grant_query;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 `;
 
