@@ -13,7 +13,7 @@
     'use strict';
 
     $('#deployments-grid table tbody tr').click(function(e){
-	if(e.ctrlKey !== true) {
+	if(e.ctrlKey !== true && e.altKey !== true && e.shiftKey !== true) {
 		return;
 	}
 
