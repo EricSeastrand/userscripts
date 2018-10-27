@@ -17,8 +17,9 @@ var fieldConstants = {
     pmi : '0.55',
     hoi : '2000',
     downpayment_type: 'percent',
-    downpayment: 3,
-    interest_rate: 5.25
+    downpayment: 18,
+    interest_rate: 5.1,
+    term: 15 // mortgage length in years
 };
 var onCalculatedEventName = 'mortgage_calculated';
 var storagePrefix = 'home_listing_';
