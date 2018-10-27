@@ -54,8 +54,12 @@ function extractListingData() {
         } catch(e) {console.log("Exception extracting data from page", val, e);}
         return false;
     };
-    data.extractAsAmount = function(val) { return sanitizeFloat(data.extractByKey(val)); };
-
+    data.extractAsAmount = function(val) {
+        try {
+            return sanitizeFloat(data.extractByKey(val));
+        } catch(e) {console.log("Exception extracting amount value from page", val, e);}
+        return false;
+    };
     var taxRate = data.extractAsAmount('Tax Rate') || 3.2;
     var listPrice = data.extractAsAmount('List Price');
     var hoaAmount = data.extractAsAmount('Maint Fee Amt');
