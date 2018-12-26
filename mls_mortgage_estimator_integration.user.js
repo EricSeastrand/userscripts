@@ -37,8 +37,7 @@ function sanitizeFloat(floatString) {
     return parseFloat(string);
 }
 
-
-function extractListingData() {
+function extractRawListingData() {
     var data = $('.J_sect .row').map(function(e){
         var key = $(this).children().first().text().trim();
         var val = $(this).children().last().text().trim();
@@ -60,6 +59,20 @@ function extractListingData() {
         } catch(e) {console.log("Exception extracting amount value from page", val, e);}
         return false;
     };
+    data.findMatches = function(searchFunction) {
+        return data.filter(function(obj) {
+            return searchFunction(obj.key, obj.val);
+        });
+    }
+
+
+
+    return data;
+}
+
+function extractListingData() {
+    var data = extractRawListingData();
+
     var taxRate = data.extractAsAmount('Tax Rate') || 3.2;
     var listPrice = data.extractAsAmount('List Price');
     var hoaAmount = data.extractAsAmount('Maint Fee Amt');
@@ -73,7 +86,8 @@ function extractListingData() {
     }else {
         var err = "Unable to determine HOA dues schedule multiplier from '"+hoaSchedule+"'";
         console.log(err, hoaSchedule, data);
-        throw err;
+        //throw err;
+        alert(err);
     }
 
     return {
@@ -135,6 +149,8 @@ $(document).keydown(function(e){
        var i = monthlyPaymentInjector();
        unsafeWindow.monthlyPaymentInjector = i;
        i.run();
+
+       addSchoolLinks();
     }
 
 });
@@ -152,6 +168,96 @@ if(window.location.href.indexOf('https://www.mortgagecalculator.org/#') !== -1) 
 } else {
     sendPriceUpdateMessage();
 }
+
+/// Stuff for school name resolution
+function getSchoolNames() {
+    var data = extractRawListingData();
+    var results = data.findMatches((k) => k.toLowerCase().indexOf('school') !== -1);
+
+    var schools = results.map(function(data){
+        var schoolName = data.val;
+        var schoolType = data.key;
+
+if(schoolType.toLowerCase().indexOf('district') !== -1) {
+schoolName = schoolName.replace(/[^a-zA-Z\s]/g, '').trim();
+schoolName += " ISD";
+    schoolType = schoolName;
+}
+
+        return {name: schoolName, type: schoolType};
+    });
+
+
+    schools = schools.sort((a,b) => {
+        function scoreItem(s) {
+            if(/junior/i.test(s)) {
+                return 5;
+            }
+            if(/high/i.test(s)) {
+                return 7;
+            }
+            if(/middle/i.test(s)) {
+                return 5;
+            }
+            if(/elem/i.test(s)) {
+                return 3;
+            }
+            if(/(isd)|(district)/i.test(s)) {
+                return 0;
+            }
+            return -1;
+        }
+
+        return Math.sign( scoreItem(a.name) - scoreItem(b.name) );
+    });
+
+    console.log(schools);
+
+    return schools;
+}
+
+function addSchoolLinks() {
+    var container = jQuery('a[title="View Map"]').closest('.d-paddingTop--20');
+
+    var schoolNames = getSchoolNames();
+
+    schoolNames.forEach(function(school){
+        var link = $('<a>').attr('target', 'blank').css('padding', '0 1em');
+
+        var linkText = normalizeSchoolName(school.type, school.name);
+
+        link.attr('href', "https://schools.texastribune.org/search/?q="+encodeURIComponent(school.name));
+        link.text(linkText);
+
+        container.append(link);
+    });
+}
+
+function normalizeSchoolName(type, name) {
+    name = name.replace(/junior high( school)?/i, ' JHS');
+    name = name.replace(/high( school)?/i, ' HS');
+    name = name.replace(/middle( school)?/i, ' MS');
+    name = name.replace(/(elementary|elem)( school)?/i, ' Elem');
+    name = name.trim();
+    return name;
+}
+
+function sortArrayByPreset(items, theOrder, itemKey) {
+var itemsOrdered = items.sort(function(a,b) {
+var _a = itemKey ? a[itemKey] : a;
+var _b = itemKey?b[itemKey] : b;
+return Math.sign(theOrder.indexOf(_a) - theOrder.indexOf(_b));
+});
+
+for (var i = 0; i < theOrder.length; i++) {
+    if (items.indexOf(theOrder[i]) > -1) {
+        itemsOrdered.push(theOrder[i]);
+    }
+}
+return itemsOrdered;
+}
+
+/// END Stuff for school name resolution
 
 function sendPriceUpdateMessage() {
     var monthlyPayment = $('.rw-box:contains("Payment With PMI"), .rw-box:contains("Monthly Payment")').find('.left-cell h3').first().text();
@@ -279,10 +385,12 @@ function monthlyPaymentInjector() {
         template.addClass('monthly-price').css('color', '#c74117');
 
         var message = self.getMonthlyPaymentMessage();
-
+        var container = jQuery('a[title="View Map"]').closest('.d-paddingTop--20');
+        container.append( $("<span>").text(message) );
+return;
         template.find('.J_formula').text(message);
 
-        addressField.closest('.d-mega').append(template);
+        addressField.closest('.d-mega').first().append(template);
     }
 
     self.getMonthlyPaymentMessage = function(address) {
