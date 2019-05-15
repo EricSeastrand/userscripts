@@ -14,6 +14,16 @@
 
 // Dont forget polyfill for stringPad: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padEnd
 
+    function addImportButton() {
+
+        const importButtonHtml = `<button class="ui-button ui-button--transparent action-bar__link" type="button" name="button"><svg focusable="false" aria-hidden="true" class="next-icon next-icon--size-20 action-bar__link-icon next-icon--no-nudge"> <svg id="next-export-minor" width="100%" height="100%"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13.707 6.707a.996.996 0 0 1-1.414 0L11 5.414V13a1 1 0 1 1-2 0V5.414L7.707 6.707a1 1 0 0 1-1.414-1.414l3-3a1 1 0 0 1 1.414 0l3 3a1 1 0 0 1 0 1.414zM17 18H3a1 1 0 1 1 0-2h14a1 1 0 1 1 0 2z"></path></svg></svg> </svg>Import</button>`;
+
+        const buttonElement = $(importButtonHtml);
+
+        $('.action-bar__top-links').prepend(buttonElement);
+
+    }
+
     window.importGiftcard = importGiftcard;
     function importGiftcard(giftCardData) {
         /*
