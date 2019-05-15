@@ -42,19 +42,20 @@
         let postData = {...preparePostData(giftCardData), ...postConstants};
 
         console.log(postData);
-        const ajaxResult = await $.ajax({
-            type: "POST",
-            url: "/admin/gift_cards",
-            data: postData,
-        });
-
-        if(ajaxResult.indexOf('gift card successfully issued') === -1) {
-            const errorMessages = $(ajaxResult).find('.errors.box').text();
-            if(!errorMessages) {
-                errorMessages = ajaxResult;
-            }
+        try {
+            var ajaxResult = await $.ajax({
+                type: "POST",
+                url: "/admin/gift_cards",
+                data: postData,
+            });
+        } catch (e) {
+            const errorMessages = $(e.responseText).find('.errors.box').text();
 
             throw `Giftcard creation was not successful. Errors:${errorMessages}`;
+        }
+
+        if(ajaxResult.indexOf('gift card successfully issued') === -1) {
+            throw `Giftcard creation was not successful, even though AJAX request was. Response:${ajaxResult}`;
         }
 
         return 1;
@@ -115,8 +116,8 @@
         console.log(`Importing giftcards: (${numInputs})`, giftCardList);
 
         const errors = [];
-        for (var i=0; i<codes.length; i++) {
-            let cardData = codes[i];
+        for (var i=0; i<giftCardList.length; i++) {
+            let cardData = giftCardList[i];
 
             try {
                 let result = await importGiftcard(cardData);
@@ -125,8 +126,6 @@
                 console.log("Exception on this giftcard:", result);
                 errors.push(result);
             }
-
-            console.log(result);
         }
 
         const numErrors = errors.length;
