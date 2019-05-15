@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  Allows you to import multiple giftcards at once from the Shopify Admin Panel
 // @author       Eric Seastrand
-// @include      https://*//admin/gift_cards
+// @include      https://*.myshopify.com/admin/gift_cards
 // @grant        none
 // @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/shopify/import_giftcards.user.js
 // ==/UserScript==
@@ -13,7 +13,6 @@
     'use strict';
 
 // Dont forget polyfill for stringPad: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padEnd
-
 
     window.importGiftcard = importGiftcard;
     function importGiftcard(giftCardData) {
@@ -42,8 +41,6 @@
             }
         });
     }
-
-    importGiftcard(giftCardData);
 
     function sanitizeGiftCardCode(giftCardCode) {
         if(giftCardCode.length > 20) {
