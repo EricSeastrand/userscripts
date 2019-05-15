@@ -25,7 +25,8 @@
     }
 
     window.importGiftcard = importGiftcard;
-    function importGiftcard(giftCardData) {
+    window.importMultipleGiftcards = importMultipleGiftcards;
+    async function importGiftcard(giftCardData) {
         /*
     Expected format:
     var giftCardData = {
@@ -41,15 +42,22 @@
         let postData = {...preparePostData(giftCardData), ...postConstants};
 
         console.log(postData);
-        $.ajax({
+        const ajaxResult = await $.ajax({
             type: "POST",
             url: "/admin/gift_cards",
             data: postData,
-            success: function(data) { console.log(data); },
-            failure: function(errMsg) {
-                console.log(errMsg);
-            }
         });
+
+        if(ajaxResult.indexOf('gift card successfully issued') === -1) {
+            const errorMessages = $(ajaxResult).find('.errors.box').text();
+            if(!errorMessages) {
+                errorMessages = ajaxResult;
+            }
+
+            throw `Giftcard creation was not successful. Errors:${errorMessages}`;
+        }
+
+        return 1;
     }
 
     function sanitizeGiftCardCode(giftCardCode) {
@@ -86,7 +94,7 @@
         } else {
             request.gift_card.never_expires = 'on';
         }
-        
+
         return request;
     }
 
@@ -98,10 +106,35 @@
         let csrfToken = jQuery('meta[name="csrf-token"]').attr('content');
         let csrfParam = jQuery('meta[name="csrf-param"]').attr('content')
         params[csrfParam] = csrfToken;
-        
+
         return params;
     }
 
+    async function importMultipleGiftcards(giftCardList) {
+        const numInputs = giftCardList.length;
+        console.log(`Importing giftcards: (${numInputs})`, giftCardList);
+
+        const errors = [];
+        for (var i=0; i<codes.length; i++) {
+            let cardData = codes[i];
+
+            try {
+                let result = await importGiftcard(cardData);
+            } catch (e) {
+                let result = {'error': e, 'input': cardData};
+                console.log("Exception on this giftcard:", result);
+                errors.push(result);
+            }
+
+            console.log(result);
+        }
+
+        const numErrors = errors.length;
+        if(numErrors > 0) {
+            console.log(`Some giftcards did not import properly (${numErrors}):`, errors);
+        }
+
+    }
 
 
 
