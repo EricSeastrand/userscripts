@@ -13,7 +13,16 @@
 (function() {
     'use strict';
     
-    console.log("Loaded Script");
-
-
+    const loginButtons = document.querySelectorAll('.ui-data-table__fixed-wrapper a[href$="/login"]');
+    
+    if(loginButtons.length > 1) {
+        console.log("There is more than 1 login button, so you need to click it yourself. Auto-login won't happen");
+        return;
+    }
+    if(loginButtons.length < 1) {
+        console.log("Unable to locate any login buttons. Auto-login won't happen");
+        return;
+    }
+    
+    loginButtons[0].click();
 })();
