@@ -30,8 +30,9 @@ function handleAutomaticLogin() {
         console.log("Unable to locate any login buttons. Auto-login won't happen");
         return;
     }
-    
-    loginButtons[0].click();
+    const loginButton = loginButtons[0];
+    loginButton.removeAttribute('target');
+    loginButton.click();
 }
 
 async function runCodeWhenElementPresent(elementSelector, codeToRun) {
