@@ -13,7 +13,14 @@
 (function() {
     'use strict';
     
-    const loginButtons = document.querySelectorAll('.ui-data-table__fixed-wrapper a[href$="/login"]');
+    runCodeWhenElementPresent('.ui-data-table__fixed-wrapper, .ui-resource-list', handleAutomaticLogin);
+
+})();
+
+
+function handleAutomaticLogin() {
+    const loginButtons = document.querySelectorAll('a.ui-resource-list-item__action[href$="/login"], .ui-data-table__fixed-wrapper a[href$="/login"]');
+
     
     if(loginButtons.length > 1) {
         console.log("There is more than 1 login button, so you need to click it yourself. Auto-login won't happen");
@@ -25,4 +32,26 @@
     }
     
     loginButtons[0].click();
-})();
+}
+
+async function runCodeWhenElementPresent(elementSelector, codeToRun) {
+	while(1) {
+		const element = document.querySelector(elementSelector);
+		
+		if(element) {
+			console.log("Found element at", new Date());
+			codeToRun();
+			break;
+		}
+
+		//console.log("Wait for next frame started at", new Date());
+		await nextFrame();
+	}
+}
+
+async function nextFrame() {
+    return new Promise(resolve => {
+        requestAnimationFrame(resolve)
+    })
+}
+
