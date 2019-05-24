@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  Adds a shortcut to the Bulk Edit page which assist with entering the data necessary for our external Soundscan reporting tool to work
 // @author       Eric Seastrand
-// @include      https://*.myshopify.com/admin/bulk/*resource_name=Product*
+// @include      https://*.myshopify.com/admin/bulk*resource_name=Product*
 // @grant        none
 // @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/shopify/soundscan_bulkeditor.user.js
 // ==/UserScript==
