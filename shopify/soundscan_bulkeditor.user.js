@@ -4,19 +4,47 @@
 // @version      0.1
 // @description  Adds a shortcut to the Bulk Edit page which assist with entering the data necessary for our external Soundscan reporting tool to work
 // @author       Eric Seastrand
-// @include      https://*.myshopify.com/admin/bulk*resource_name=Product*
+// @include      https://*.myshopify.com/admin/*
 // @grant        none
 // @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/shopify/soundscan_bulkeditor.user.js
 // ==/UserScript==
 (function() {
     'use strict';
 
-    runCodeWhenElementPresent('#resource_table', function() {
-        addBubbleUpShortcuts([{
-            'label': 'Soundscan Fields',
-            'href': buildBulkEditorUrlForSoundscan()
-        }]);
-    });
+
+    function hookFunction(object, functionName, callback) {
+	(function(originalFunction) {
+		object[functionName] = function () {
+			var returnValue = originalFunction.apply(this, arguments);
+
+			callback.apply(this, [returnValue, originalFunction, arguments]);
+
+			return returnValue;
+		};
+	}(object[functionName]));
+}
+
+//hookFunction(window.Page, 'replaceState', onPageChange); // Run our code when Shopify changes page history state.
+    onPageChange() //and at load time.
+
+
+    function onPageChange() {
+        if(window.location.search.indexOf('resource_name=Product') === -1 ) {
+            console.log("This is not a product bulk edit page, so we're not loading anything");
+            return;
+        }
+
+        console.log("Running when element present");
+
+        runCodeWhenElementPresent('#resource_table', function() {
+            addBubbleUpShortcuts([{
+                'label': 'Soundscan Fields',
+                'href': buildBulkEditorUrlForSoundscan()
+            }]);
+        });
+
+    }
+
 
 
     function buildBulkEditorUrlForSoundscan() {
@@ -44,6 +72,8 @@
     }
 
     function addBubbleUpShortcuts(items) {
+        $('.bu-shortcuts').remove(); // just incase...
+
         const shortcutContainer = $('<div>').addClass('bu-shortcuts');
 
         shortcutContainer.append('<span>BU Shortcuts</span>');
