@@ -161,7 +161,10 @@
 		elapsedTimeContainer.text(timeSinceArrival);
 		arrivalTimeContainer.text( arrivalTime.toLocaleTimeString() );
 
-		deficitTimeContainer.text( getElapsedString(deficit / 1000) );
+        let missingTimeFormattedHMS = getElapsedString(deficit / 1000);
+		deficitTimeContainer.text( missingTimeFormattedHMS );
+
+        window.document.title = "Unlogged: " + missingTimeFormattedHMS;
 
 		var deficitHours = deficit / 1000 / 60 / 60;
 
