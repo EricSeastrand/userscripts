@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TeamWork show missing time
 // @namespace    https://www.bubbleup.net/
-// @version      0.1
+// @version      0.2
 // @description  Shows how much time you are missing for the day on the everything/time grid
 // @author       You
 // @match        https://pm.bubbleup.net/*
@@ -16,6 +16,12 @@
       console.log("This does not appear to be the timelogs page. Not adding counters");
       return;
     }
+
+    var domSelectors = {
+        containerParent: '.main-header__base .main-header__left',
+        timeRowsForMostRecentDay: 'table.w-time-grid:first tr[data-id]',
+        cellForTimeCardStart: '[data-time-column="startTime"]'
+    };
 
 	var timerCss = {
 		'font-weight': 'bold',
@@ -52,7 +58,7 @@
 			'margin-left' : '1%',
 		});
 
-		containerDiv.insertAfter('.new__main-header__base .new__main-header__left');
+		containerDiv.insertAfter(domSelectors.containerParent);
 
 		window.setInterval(syncFromServer, .25 /* minutes */ * (60 * 1000));
 		syncFromServer();
@@ -88,10 +94,10 @@
 		var defaultTime = getDefaultArrivalTime();
 
 		try {
-			var rowsWithNoStartTime = $('.widget-time-list table:first .timeEntryRow .time:contains("—")').closest('.timeEntryRow');
-			var firstTimeCell = $('.widget-time-list table:first .timeEntryRow').not(rowsWithNoStartTime).last().find('.time:first');
+            var rowsWithNoStartTime = $(domSelectors.timeRowsForMostRecentDay+ ' '+ domSelectors.cellForTimeCardStart+':contains("—")').closest('tr');
+			var firstTimeCell = $(domSelectors.timeRowsForMostRecentDay).not(rowsWithNoStartTime).last().find(domSelectors.cellForTimeCardStart + ':first');
 			
-			var dateString = $('.widget-time-list:eq(0) .gridHeading.subTitle').text().trim() + ' ' + firstTimeCell.text().trim();
+			var dateString = $('.w-time-list:eq(0) .gridHeading.subTitle').text().trim() + ' ' + firstTimeCell.text().trim();
 			var firstTime = moment(dateString, "dddd[,] DD MMMM h:mma").toDate();
 		} catch(e) {
 			console.log("Can't get start time", e);
@@ -172,7 +178,7 @@
 	}
 
 	function getTimeLogged() {
-		var hours = parseFloat( $('.totalGrid:first tr:first td:last').text() );
+		var hours = parseFloat( $('.w-time-list__totals:first tr:first td:last').text() );
 
 		return hours * 60 * 60 * 1000;
 	}
