@@ -22,7 +22,7 @@
 
     console.log(style.sheet.cssRules); // length is 0, and no rules
 
-    style.sheet.insertRule('div#mlogo{ display: none; }', 0);
+    style.sheet.insertRule('.app-sidebar__logo-holder{ display: none; }', 0);
 
 
 })();
