@@ -7,6 +7,7 @@
 // @match        https://push-service.busites.com/index.php?r=deployments/admin*
 // @grant        none
 // @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/bubbleup/pushservice_deployment_admin_links.user.js
+// ==/UserScript==
 
 const columnIndexes = {
 	'hostname': 2,
