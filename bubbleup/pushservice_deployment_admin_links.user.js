@@ -8,51 +8,52 @@
 // @grant        none
 // @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/bubbleup/pushservice_deployment_admin_links.user.js
 // ==/UserScript==
+(function(){
+	const columnIndexes = {
+		'hostname': 2,
+		'core_repo': 3
+	};
 
-const columnIndexes = {
-	'hostname': 2,
-	'core_repo': 3
-};
+	$('#deployments-grid tbody tr').each(function(){
+		var $this = $(this);
+		var adminPath;
 
-$('#deployments-grid tbody tr').each(function(){
-	var $this = $(this);
-	var adminPath;
-
-	try{
-		var core = $this.find('td:nth-of-type('+columnIndexes.core_repo+')').text().split('/')[1];
-		console.log('Core Repo:',core, this);
-	}catch(e){
-		return;
-	}
+		try{
+			var core = $this.find('td:nth-of-type('+columnIndexes.core_repo+')').text().split('/')[1];
+			console.log('Core Repo:',core, this);
+		}catch(e){
+			return;
+		}
 
 
-	if( core == 'empty' ) return;
+		if( core == 'empty' ) return;
 
-	if( core == 'bamp' || core == 'busa' ) {
-		adminPath = '/busa';
-	}
-	else if( core == 'magento-core' ) {
-		adminPath = '/admin';
-	}	
-	else if( core == 'wordpress' ) {
-		adminPath = '/wp-admin';
-	}
-	else if( core == 'connect' ) {
-		adminPath = '/connect';
-	}
+		if( core == 'bamp' || core == 'busa' ) {
+			adminPath = '/busa';
+		}
+		else if( core == 'magento-core' ) {
+			adminPath = '/admin';
+		}	
+		else if( core == 'wordpress' ) {
+			adminPath = '/wp-admin';
+		}
+		else if( core == 'connect' ) {
+			adminPath = '/connect';
+		}
 
-	var link = $this.find('td:nth-of-type('+columnIndexes.hostname+') a');
+		var link = $this.find('td:nth-of-type('+columnIndexes.hostname+') a');
 
-	$('<a>')
-		.text(adminPath)
-		.attr({
-			href: link.attr('href') + adminPath,
-			target: '_blank'
-		})
-		.css({
-			float: 'right'
-		})
-		.insertAfter(link)
-	;
+		$('<a>')
+			.text(adminPath)
+			.attr({
+				href: link.attr('href') + adminPath,
+				target: '_blank'
+			})
+			.css({
+				float: 'right'
+			})
+			.insertAfter(link)
+		;
 
-});
+	});
+}());
