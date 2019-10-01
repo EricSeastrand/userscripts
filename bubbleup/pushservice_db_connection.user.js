@@ -4,7 +4,7 @@
 // @version      0.2
 // @description  Builds DB connection/backup commands for you
 // @author       Eric Seastrand
-// @match        https://push-service.busites.com/index.php?r=sites/view&id=*
+// @match        https://push-service.busites.com/index.php?r=deployments/update&id=*
 // @grant        none
 // @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/bubbleup/pushservice_db_connection.user.js
 // ==/UserScript==
