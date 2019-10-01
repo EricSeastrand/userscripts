@@ -42,12 +42,12 @@ function loadScript(url, callback){
             if (script.readyState == "loaded" ||
                     script.readyState == "complete"){
                 script.onreadystatechange = null;
-                callback();
+                callback && callback();
             }
         };
     } else {  //Others
         script.onload = function(){
-            callback();
+            callback && callback();
         };
     }
 
