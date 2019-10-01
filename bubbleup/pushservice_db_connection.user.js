@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         PS DB transfer helper
+// @name         PS DB connection helper
 // @namespace    https://www.bubbleup.net
 // @version      0.2
-// @description  Builds DB transfer commands/queries for you
+// @description  Builds DB connection/backup commands for you
 // @author       Eric Seastrand
 // @match        https://push-service.busites.com/index.php?r=sites/view&id=*
 // @grant        none
