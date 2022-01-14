@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TeamWork show missing time
 // @namespace    https://www.bubbleup.net/
-// @version      0.2
+// @version      0.3
 // @description  Shows how much time you are missing for the day on the everything/time grid
 // @author       You
 // @match        https://pm.bubbleup.net/*
@@ -9,8 +9,9 @@
 // @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/bubbleup/teamwork_show_missing_time.user.js
 // ==/UserScript==
 
-(function($) {
+(function() {
     'use strict';
+    var $;
     
     if(! /everything\/time/.test(window.location.href) ) {
       console.log("This does not appear to be the timelogs page. Not adding counters");
@@ -178,7 +179,8 @@
 	}
 
 	function getTimeLogged() {
-		var hours = parseFloat( $('.w-time-list__totals:first tr:first td:last').text() );
+        var timeLoggedString = $('.w-time-list__totals-list--item:first span:eq(2)').text().replace('(', '').replace(')', '');
+		var hours = parseFloat( timeLoggedString );
 
 		return hours * 60 * 60 * 1000;
 	}
@@ -250,4 +252,4 @@
 
 
 
-})(jQuery);
+})();
