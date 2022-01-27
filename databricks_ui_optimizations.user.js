@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DataBricks : UI optimizations
 // @namespace    https://ericseastrand.com/
-// @version      0.1
+// @version      0.2
 // @description  Creature comforts like color coding for dev vs prod, taking advantage of larger screens, and more!
 // @author       Eric Seastrand
 // @match        https://*.cloud.databricks.com/*
@@ -11,6 +11,14 @@
 
 (function() {
     'use strict';
+
+    if(window !== window.top) {
+        // Unclear why, but databricks has multiple "windows" and this userscript runs in each one.
+        // The stuff we're doing here only makes sense in the "main" window, as we're adding styling and whatnot.
+        // Abort early in a non-top window case, just to make sure we don't break anything.
+        console.log("Userscript ran from a non-top window. Doing nothing");
+        return
+    }
 
     var style = document.createElement("style");
 
