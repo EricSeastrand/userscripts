@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         TeamWork show missing time
 // @namespace    https://www.bubbleup.net/
-// @version      0.3
+// @version      0.4
 // @description  Shows how much time you are missing for the day on the everything/time grid
 // @author       You
 // @match        https://pm.bubbleup.net/*
 // @grant        none
 // @downloadURL  https://raw.githubusercontent.com/willcodeforfood/userscripts/master/bubbleup/teamwork_show_missing_time.user.js
+// @require      https://code.jquery.com/jquery-3.7.1.slim.min.js
 // ==/UserScript==
 
 (function() {
@@ -19,7 +20,7 @@
     }
 
     var domSelectors = {
-        containerParent: '.main-header__base .main-header__left',
+        containerParent: '.main-header__base',
         timeRowsForMostRecentDay: 'table.w-time-grid:first tr[data-id]',
         cellForTimeCardStart: '[data-time-column="startTime"]'
     };
@@ -59,7 +60,7 @@
 			'margin-left' : '1%',
 		});
 
-		containerDiv.insertAfter(domSelectors.containerParent);
+		containerDiv.prependTo(domSelectors.containerParent);
 
 		window.setInterval(syncFromServer, .25 /* minutes */ * (60 * 1000));
 		syncFromServer();
